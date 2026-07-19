@@ -14,7 +14,7 @@ The final result must visually resemble a real game board (hex textures, number 
 - **React** — all components are client components (`"use client"`), no backend
 - Map rendering — **plain SVG** (no canvas libraries, no graph-rendering libraries)
 - State — `useState`/`useReducer`, no external state managers (small project)
-- Localization — a simple JSON dictionary + React Context, no next-intl (3 languages, no URL routing needed)
+- Localization — **react-i18next** + JSON dictionaries (3 languages), language persisted to `localStorage`, no URL routing needed
 - Deployment — **Vercel** (free Hobby plan, auto-deploy from GitHub)
 
 ## Project structure
@@ -42,6 +42,8 @@ The final result must visually resemble a real game board (hex textures, number 
   ru.json
   en.json
   de.json
+/src/lib
+  i18n.ts                                  // react-i18next setup, resources loaded from /src/locales
 ```
 
 All generation logic in `/src/lib/generation` consists of pure functions with no React dependencies (easy to unit test).
@@ -108,7 +110,9 @@ The composition of each of the 6 segments (`fixedPorts`) is a constant, set once
 
 ### 6. Localization
 
-All entities are identified by internal keys (`hills`, `brick`, `3:1`, etc.); translations live in separate RU/EN/DE dictionaries.
+All entities are identified by internal keys (`hills`, `brick`, `3:1`, etc.); translations live in separate RU/EN/DE dictionaries under `/src/locales`, loaded directly into `react-i18next` (`src/lib/i18n.ts`) — no lazy loading or backend plugin, the dictionaries are small and bundled.
+
+The selected language is persisted to `localStorage` (key `catan-map-generator-language`) so it survives reloads. To avoid a server/client hydration mismatch on the statically exported page, `i18n.ts` always initializes to `en`; a client-only `I18nProvider` (`src/components/I18nProvider.tsx`) reads `localStorage` in a `useEffect` after mount and switches language then, and persists future language changes via the `languageChanged` event.
 
 ### 7. Data structures
 

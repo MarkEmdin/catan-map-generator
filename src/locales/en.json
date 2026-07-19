@@ -1,0 +1,20 @@
+{
+  "terrain": {
+    "hills": "Hills",
+    "forest": "Forest",
+    "mountains": "Mountains",
+    "fields": "Fields",
+    "pasture": "Pasture",
+    "desert": "Desert"
+  },
+  "resource": {
+    "brick": "Brick",
+    "wood": "Wood",
+    "ore": "Ore",
+    "wheat": "Wheat",
+    "sheep": "Sheep"
+  },
+  "port": {
+    "3:1": "3:1"
+  }
+}
