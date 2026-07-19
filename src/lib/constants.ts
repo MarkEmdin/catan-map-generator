@@ -24,21 +24,21 @@ export const LETTER_TO_NUMBER: Record<string, number> = {
   L: 10,
   M: 9,
   N: 4,
-  O: 11,
-  P: 3,
-  Q: 5,
-  R: 6,
+  O: 5,
+  P: 6,
+  Q: 3,
+  R: 11,
 };
 
 // Fixed traversal order for the 3-4-5-4-3 board: outer ring (12) -> middle
-// ring (6) -> center (1). Both rings are walked clockwise starting from the
-// west hex, but the middle ring is walked in the opposite rotational sense
-// from the outer ring - with matching rotation, letters mapped to 6 and 8
-// (C, E, K, R) can end up adjacent across the outer/middle boundary
-// depending on where the desert lands; this arrangement was verified
-// (see numbers.test.ts) to keep 6 and 8 apart for every possible desert
-// position. Letters A-R are assigned to these positions in order, skipping
-// whichever position ends up holding the desert.
+// ring (6) -> center (1), both walked clockwise starting from the west hex
+// in the same rotational sense. This specific rotation/direction pairing
+// was chosen (see numbers.test.ts) to keep 6 and 8 apart for every possible
+// desert position, given the current LETTER_TO_NUMBER mapping - if that
+// mapping changes, re-verify (or re-search) this arrangement, since a
+// different mapping can make a different rotation the safe one. Letters
+// A-R are assigned to these positions in order, skipping whichever
+// position ends up holding the desert.
 export const SPIRAL_ORDER: Array<{ x: number; y: number; z: number }> = [
   { x: -2, y: 0, z: 2 },
   { x: -1, y: -1, z: 2 },
@@ -52,12 +52,12 @@ export const SPIRAL_ORDER: Array<{ x: number; y: number; z: number }> = [
   { x: -1, y: 2, z: -1 },
   { x: -2, y: 2, z: 0 },
   { x: -2, y: 1, z: 1 },
-  { x: -1, y: 1, z: 0 },
-  { x: 0, y: 1, z: -1 },
-  { x: 1, y: 0, z: -1 },
-  { x: 1, y: -1, z: 0 },
-  { x: 0, y: -1, z: 1 },
   { x: -1, y: 0, z: 1 },
+  { x: 0, y: -1, z: 1 },
+  { x: 1, y: -1, z: 0 },
+  { x: 1, y: 0, z: -1 },
+  { x: 0, y: 1, z: -1 },
+  { x: -1, y: 1, z: 0 },
   { x: 0, y: 0, z: 0 },
 ];
 
