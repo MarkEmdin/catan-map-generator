@@ -80,7 +80,7 @@ The desert never gets a number token.
 ```
 A=5  B=2  C=6  D=3  E=8  F=10
 G=9  H=12 I=11 J=4  K=8  L=10
-M=9  N=4  O=11 P=3  Q=5  R=6
+M=9  N=4  O=5  P=6  Q=3  R=11
 ```
 
 **Algorithm:**
@@ -109,6 +109,8 @@ Physically, ports are not placed fully at random: the sea frame is made of 6 bor
 9 ports total: 4× generic (3:1) + 1× each resource (2:1).
 
 The only variable is the order of the 6 segments — shuffled (Fisher-Yates over 6 positions). The composition of each of the 6 segments (`fixedPorts`) is constant, set once based on the physical set (it differs between editions) — it never gets reshuffled independently.
+
+Geometrically, each side's port(s) all sit on that side's single designated hex (not spread across 2 hexes) — see `src/lib/generation/portLayout.ts`. That hex is never a neighbor of an adjacent side's hex, so two different sides' ports can never end up next to each other, regardless of shuffle order; a 2-port segment's own 2 ports sit on two adjacent edges of its one hex. An earlier version spread a side's ports across 2 different (and sometimes mutually adjacent) hexes, which let a neighboring side's port visually bleed into a 2-port side's territory — this design replaces it.
 
 ### 6. Localization
 

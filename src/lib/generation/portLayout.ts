@@ -28,22 +28,21 @@ function outwardDirection(side: number, hexSize: number): Point {
   return normalize({ x: pa.x + pb.x, y: pa.y + pb.y });
 }
 
-function coastalEdge(center: Point, hexSize: number, outward: Point): Point[] {
+function edgesRankedByOutward(center: Point, hexSize: number, outward: Point): Point[][] {
   const corners = hexCorners(center, hexSize);
-  let bestIndex = 0;
-  let bestDot = -Infinity;
-  for (let i = 0; i < 6; i++) {
-    const a = corners[i];
-    const b = corners[(i + 1) % 6];
-    const midpoint = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-    const direction = normalize({ x: midpoint.x - center.x, y: midpoint.y - center.y });
-    const dot = direction.x * outward.x + direction.y * outward.y;
-    if (dot > bestDot) {
-      bestDot = dot;
-      bestIndex = i;
-    }
-  }
-  return [corners[bestIndex], corners[(bestIndex + 1) % 6]];
+  return corners
+    .map((corner, i) => [corner, corners[(i + 1) % 6]])
+    .map((edge) => {
+      const midpoint = { x: (edge[0].x + edge[1].x) / 2, y: (edge[0].y + edge[1].y) / 2 };
+      const direction = normalize({ x: midpoint.x - center.x, y: midpoint.y - center.y });
+      return { edge, dot: direction.x * outward.x + direction.y * outward.y };
+    })
+    .sort((a, b) => b.dot - a.dot)
+    .map((ranked) => ranked.edge);
+}
+
+function coastalEdge(center: Point, hexSize: number, outward: Point): Point[] {
+  return edgesRankedByOutward(center, hexSize, outward)[0];
 }
 
 export interface SegmentPortLayout {
@@ -121,27 +120,39 @@ export function layoutSeaWedges(
   });
 }
 
+// All of a side's ports sit on its single "middle" hex (the corner hex is
+// left untouched, always plain coastline) - the middle hexes of two
+// different sides are never adjacent to each other (there's always an
+// unused corner hex between them), so no shuffle of segments can ever
+// place two different sides' ports next to one another. edgeOffsetInSegment
+// picks which of that hex's edges (ranked by how outward-facing they are)
+// each port sits on: 0 is the most outward edge, 1 the next-most.
 export function layoutPorts(
   segments: BorderSegment[],
   hexSize: number
 ): SegmentPortLayout[] {
   return segments.map((segment) => {
-    const hexes = sideHexes(segment.position);
-    const outward = outwardDirection(segment.position, hexSize);
+    const side = segment.position;
+    const hex = sideHexes(side)[1];
+    const center = cubeToPixel(hex, hexSize);
+    const outward = outwardDirection(side, hexSize);
+    const rankedEdges = edgesRankedByOutward(center, hexSize, outward);
 
     const ports = segment.fixedPorts.map((port) => {
-      const hex = hexes[port.edgeOffsetInSegment];
-      const center = cubeToPixel(hex, hexSize);
-      const coastPoints = coastalEdge(center, hexSize, outward);
+      const coastPoints = rankedEdges[port.edgeOffsetInSegment];
       const edgeMidpoint = {
         x: (coastPoints[0].x + coastPoints[1].x) / 2,
         y: (coastPoints[0].y + coastPoints[1].y) / 2,
       };
+      const pushDirection = normalize({
+        x: edgeMidpoint.x - center.x,
+        y: edgeMidpoint.y - center.y,
+      });
 
       return {
         type: port.type,
-        x: edgeMidpoint.x + outward.x * hexSize * PORT_DISTANCE_FACTOR,
-        y: edgeMidpoint.y + outward.y * hexSize * PORT_DISTANCE_FACTOR,
+        x: edgeMidpoint.x + pushDirection.x * hexSize * PORT_DISTANCE_FACTOR,
+        y: edgeMidpoint.y + pushDirection.y * hexSize * PORT_DISTANCE_FACTOR,
         coastPoints,
       };
     });
