@@ -1,11 +1,5 @@
-import { PortMarker, Point } from "./PortMarker";
-
-export interface PortPlacement {
-  type: string;
-  x: number;
-  y: number;
-  coastPoints: Point[];
-}
+import { PortMarker } from "./PortMarker";
+import { PortPlacement } from "@/lib/generation/portLayout";
 
 interface BorderSegmentProps {
   ports: PortPlacement[];

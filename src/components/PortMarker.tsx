@@ -1,3 +1,5 @@
+import { Point } from "@/lib/generation/coords";
+
 const RESOURCE_COLORS: Record<string, string> = {
   brick: "var(--terrain-hills)",
   wood: "var(--terrain-forest)",
@@ -11,11 +13,6 @@ export function getPortDisplay(type: string): { label: string; color: string } {
     return { label: "3:1", color: "var(--number-black)" };
   }
   return { label: "2:1", color: RESOURCE_COLORS[type] ?? "var(--number-black)" };
-}
-
-export interface Point {
-  x: number;
-  y: number;
 }
 
 interface PortMarkerProps {

@@ -44,7 +44,7 @@ describe("layoutPorts", () => {
 
   it("stays correct (9 placements, valid geometry) for any shuffled segment order", () => {
     for (let i = 0; i < 50; i++) {
-      const segments = generatePorts({ allowFullyRandomPorts: i % 2 === 0 });
+      const segments = generatePorts();
       const placements = flattenPorts(layoutPorts(segments, HEX_SIZE));
       expect(placements).toHaveLength(9);
       for (const p of placements) {

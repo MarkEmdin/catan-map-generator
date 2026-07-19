@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #fdf1f4;
   --foreground: #171717;
 
   --terrain-hills: #c1440e;
@@ -11,6 +11,7 @@
   --terrain-pasture: #8baa5c;
   --terrain-desert: #e8d4a0;
   --water: #2c6e8e;
+  --sea-light: #cfe8f3;
   --token-cream: #f5edd8;
   --number-red: #c1272d;
   --number-black: #1a1a1a;
@@ -23,7 +24,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #140f11;
     --foreground: #ededed;
   }
 }
