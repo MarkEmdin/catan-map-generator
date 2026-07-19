@@ -11,7 +11,7 @@ import { HexTile, BorderSegment } from "@/lib/types";
 
 const DEFAULT_OPTIONS: GenerationOptions = {
   desertInCenter: false,
-  allowSameTerrainNeighbors: false,
+  allowSameTerrainNeighbors: true,
 };
 
 interface Board {
@@ -40,7 +40,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-6">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6">
       <h1 className="text-2xl font-semibold">{t("ui.appTitle")}</h1>
       <MapControls
         options={options}

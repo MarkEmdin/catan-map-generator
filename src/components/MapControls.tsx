@@ -19,29 +19,31 @@ export function MapControls({ options, onOptionsChange, onGenerate }: MapControl
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          className="h-5 w-5"
-          checked={options.desertInCenter}
-          onChange={() => toggle("desertInCenter")}
-        />
-        {t("ui.desertInCenter")}
-      </label>
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          className="h-5 w-5"
-          checked={options.allowSameTerrainNeighbors}
-          onChange={() => toggle("allowSameTerrainNeighbors")}
-        />
-        {t("ui.allowSameTerrainNeighbors")}
-      </label>
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            className="h-5 w-5"
+            checked={options.desertInCenter}
+            onChange={() => toggle("desertInCenter")}
+          />
+          {t("ui.desertInCenter")}
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            className="h-5 w-5"
+            checked={options.allowSameTerrainNeighbors}
+            onChange={() => toggle("allowSameTerrainNeighbors")}
+          />
+          {t("ui.allowSameTerrainNeighbors")}
+        </label>
+      </div>
       <button
         type="button"
         onClick={onGenerate}
-        className="rounded-md bg-[var(--water)] px-4 py-2 text-sm font-semibold text-white"
+        className="self-start rounded-md bg-[var(--water)] px-4 py-2 text-sm font-semibold text-white"
       >
         {t("ui.generate")}
       </button>

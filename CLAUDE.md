@@ -99,8 +99,8 @@ This guarantees that 6 and 8 never end up adjacent — by construction, not via 
 
 ### 4. "Allow same-terrain neighbors" option
 
-- Off (default): after placement — validate; if a hex has 2+ neighbors of the same terrain type → reshuffle/swap.
-- On: validation is skipped.
+- Off: after placement — validate; if a hex has 2+ neighbors of the same terrain type → reshuffle/swap.
+- On (default): validation is skipped.
 
 ### 5. Ports — "6 border segments" model
 
