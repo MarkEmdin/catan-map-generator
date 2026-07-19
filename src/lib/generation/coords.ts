@@ -4,6 +4,11 @@ export interface CubeCoord {
   z: number;
 }
 
+export interface Point {
+  x: number;
+  y: number;
+}
+
 // Same direction order used to build SPIRAL_ORDER in constants.ts, so
 // walking neighbors stays consistent with the spiral traversal.
 export const CUBE_DIRECTIONS: CubeCoord[] = [
@@ -32,14 +37,23 @@ export function neighbors(cube: CubeCoord): CubeCoord[] {
 }
 
 // Pointy-top hex layout: axial (q, r) = (cube.x, cube.z).
-export function cubeToPixel(
-  cube: CubeCoord,
-  hexSize: number
-): { x: number; y: number } {
+export function cubeToPixel(cube: CubeCoord, hexSize: number): Point {
   const q = cube.x;
   const r = cube.z;
   return {
     x: hexSize * (Math.sqrt(3) * q + (Math.sqrt(3) / 2) * r),
     y: hexSize * (1.5 * r),
   };
+}
+
+// The 6 corners of a pointy-top hex, in clockwise order starting from the
+// top-right corner. Corner i sits at angle (60*i - 30) degrees.
+export function hexCorners(center: Point, size: number): Point[] {
+  return Array.from({ length: 6 }, (_, i) => {
+    const angleRad = (Math.PI / 180) * (60 * i - 30);
+    return {
+      x: center.x + size * Math.cos(angleRad),
+      y: center.y + size * Math.sin(angleRad),
+    };
+  });
 }

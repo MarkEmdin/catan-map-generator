@@ -3,6 +3,17 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  --terrain-hills: #c1440e;
+  --terrain-forest: #2d5a27;
+  --terrain-mountains: #6b7280;
+  --terrain-fields: #d4a017;
+  --terrain-pasture: #8baa5c;
+  --terrain-desert: #e8d4a0;
+  --water: #2c6e8e;
+  --token-cream: #f5edd8;
+  --number-red: #c1272d;
+  --number-black: #1a1a1a;
 }
 
 @theme inline {
