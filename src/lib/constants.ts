@@ -61,11 +61,13 @@ export const SPIRAL_ORDER: Array<{ x: number; y: number; z: number }> = [
   { x: 0, y: 0, z: 0 },
 ];
 
-// Placeholder composition, pending confirmation against a physical set (see
-// CLAUDE.md "Known limitations"). 9 ports total: 4x generic (3:1) + 1 each
-// resource (2:1), spread across the 6 frame segments. Only the segment
+// Confirmed against the physical set. 9 ports total: 4x generic (3:1) + 1
+// each resource (2:1), spread across the 6 frame segments. Only the segment
 // *order* is randomized at generation time; each segment's own port
 // composition is fixed.
+//
+// Segment 1: 3:1 + Wheat (2:1) · Segment 2: Ore (2:1) · Segment 3: 3:1 + Sheep (2:1)
+// Segment 4: 3:1 · Segment 5: 3:1 + Brick (2:1) · Segment 6: Wood (2:1)
 export const BORDER_SEGMENTS_DEFAULT: BorderSegment[] = [
   {
     id: 1,
@@ -78,32 +80,32 @@ export const BORDER_SEGMENTS_DEFAULT: BorderSegment[] = [
   {
     id: 2,
     position: 1,
-    fixedPorts: [{ type: "brick", edgeOffsetInSegment: 0 }],
+    fixedPorts: [{ type: "ore", edgeOffsetInSegment: 0 }],
   },
   {
     id: 3,
     position: 2,
     fixedPorts: [
       { type: "3:1", edgeOffsetInSegment: 0 },
-      { type: "ore", edgeOffsetInSegment: 1 },
+      { type: "sheep", edgeOffsetInSegment: 1 },
     ],
   },
   {
     id: 4,
     position: 3,
-    fixedPorts: [{ type: "sheep", edgeOffsetInSegment: 0 }],
+    fixedPorts: [{ type: "3:1", edgeOffsetInSegment: 0 }],
   },
   {
     id: 5,
     position: 4,
     fixedPorts: [
       { type: "3:1", edgeOffsetInSegment: 0 },
-      { type: "wood", edgeOffsetInSegment: 1 },
+      { type: "brick", edgeOffsetInSegment: 1 },
     ],
   },
   {
     id: 6,
     position: 5,
-    fixedPorts: [{ type: "3:1", edgeOffsetInSegment: 0 }],
+    fixedPorts: [{ type: "wood", edgeOffsetInSegment: 0 }],
   },
 ];

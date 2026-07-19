@@ -21,30 +21,36 @@ The final result must visually resemble a real game board (hex textures, number 
 
 ```
 /src/app
-  layout.tsx
-  page.tsx                    // the app's single page
+  layout.tsx                  // renders Header + I18nProvider around every page
+  page.tsx                    // the main generator page
+  about/page.tsx                // the About page
 /src/components
-  MapControls.tsx              // checkboxes, language selector, "generate" button
-  MapCanvas.tsx                 // SVG render of the whole map
-  HexTile.tsx                    // a single hex (terrain + texture + number)
-  NumberToken.tsx                 // number circle + probability pips
-  PortMarker.tsx                   // port icon in the water + dashed lines to the coast
-  BorderSegment.tsx                 // one sea frame segment with its ports
+  Header.tsx                    // nav links (Generator / About) + language switcher
+  MapControls.tsx                // checkboxes + "generate" button
+  MapCanvas.tsx                    // SVG render of the whole map
+  HexTile.tsx                       // a single hex (terrain + texture + number)
+  NumberToken.tsx                     // number circle + roll probability
+  PortMarker.tsx                       // port icon in the water + dashed lines to the coast
+  BorderSegment.tsx                      // one sea frame segment with its ports
+  I18nProvider.tsx                        // client-side react-i18next provider + localStorage sync
 /src/lib/generation
   terrain.ts                        // terrain hex shuffle + adjacency validation
   numbers.ts                         // official alphabetical A-R algorithm
   ports.ts                            // shuffle of the 6 border segments
-  coords.ts                            // cube/axial → pixel, spiral order, neighbors
+  portLayout.ts                        // pixel placement of port icons + coastal edges
+  coords.ts                             // cube/axial → pixel, hex corners, neighbors
+  shuffle.ts                              // shared Fisher-Yates shuffle
 /src/lib
   constants.ts                          // TERRAIN_SET, LETTER_TO_NUMBER, SPIRAL_ORDER, BORDER_SEGMENTS_DEFAULT
   types.ts                                // HexTile, BorderSegment, GenerationConfig
+  i18n.ts                                  // react-i18next setup, resources loaded from /src/locales
 /src/locales
   ru.json
   en.json
   de.json
-/src/lib
-  i18n.ts                                  // react-i18next setup, resources loaded from /src/locales
 ```
+
+Language switching lives in the Header, not in MapControls - it's app-wide chrome rather than a generation option.
 
 All generation logic in `/src/lib/generation` consists of pure functions with no React dependencies (easy to unit test).
 
@@ -102,11 +108,7 @@ Physically, ports are not placed fully at random: the sea frame is made of 6 bor
 
 9 ports total: 4× generic (3:1) + 1× each resource (2:1).
 
-**Two levels of randomness:**
-1. Order of the 6 segments — shuffled (Fisher-Yates over 6 positions). This is the only variable by default.
-2. (optional, "allow fully random ports" checkbox) — port types within slots are shuffled independently of the segments, if extra variability beyond the official mechanism is desired.
-
-The composition of each of the 6 segments (`fixedPorts`) is a constant, set once based on the physical set (it differs between editions).
+The only variable is the order of the 6 segments — shuffled (Fisher-Yates over 6 positions). The composition of each of the 6 segments (`fixedPorts`) is constant, set once based on the physical set (it differs between editions) — it never gets reshuffled independently.
 
 ### 6. Localization
 
@@ -121,7 +123,6 @@ interface GenerationConfig {
   language: 'ru' | 'en' | 'de';
   desertInCenter: boolean;
   allowSameTerrainNeighbors: boolean;
-  allowFullyRandomPorts: boolean;
 }
 
 interface HexTile {
@@ -149,12 +150,10 @@ interface BorderSegment {
 3. If `allowSameTerrainNeighbors === false` — validate and reshuffle/swap.
 4. Build the spiral, skip the desert, assign letters A-R and numbers.
 5. Shuffle the order of the 6 border segments.
-6. If `allowFullyRandomPorts === true` — additionally shuffle port types.
-7. Assemble the final `HexTile[]` + `BorderSegment[]`, applying `language`.
+6. Assemble the final `HexTile[]` + `BorderSegment[]`, applying `language`.
 
 ### 9. Known limitations
 
-- The exact port composition of each of the 6 border segments needs to be confirmed against a physical set and hardcoded as a constant.
 - These rules cover only the standard 3-4-5-4-3 board (3-4 players). The 5-6 player expansion is out of scope for this document.
 
 ---

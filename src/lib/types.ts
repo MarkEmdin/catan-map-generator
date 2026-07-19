@@ -2,7 +2,6 @@ export interface GenerationConfig {
   language: "ru" | "en" | "de";
   desertInCenter: boolean;
   allowSameTerrainNeighbors: boolean;
-  allowFullyRandomPorts: boolean;
 }
 
 export interface HexTile {

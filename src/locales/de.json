@@ -18,10 +18,18 @@
     "3:1": "3:1"
   },
   "ui": {
+    "appTitle": "Catan-Kartengenerator",
     "generate": "Generieren",
     "desertInCenter": "Wüste in der Mitte",
     "allowSameTerrainNeighbors": "Gleiches Gelände nebeneinander erlauben",
-    "allowFullyRandomPorts": "Vollständig zufällige Häfen",
     "language": "Sprache"
+  },
+  "nav": {
+    "home": "Generator",
+    "about": "Über"
+  },
+  "about": {
+    "title": "Über",
+    "body": "Dieses Tool generiert ein Catan-Spielfeld nach den offiziellen Aufbauregeln, damit du die Plättchen für ein physisches Spiel anordnen kannst. Es erzeugt nur die Karte - der Spielverlauf selbst wird nicht umgesetzt."
   }
 }
