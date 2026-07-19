@@ -99,7 +99,7 @@ This guarantees that 6 and 8 never end up adjacent — by construction, not via 
 
 ### 4. "Allow same-terrain neighbors" option
 
-- Off: after placement — validate; if a hex has 2+ neighbors of the same terrain type → reshuffle/swap.
+- Off: after placement — validate; if a hex has *any* neighbor of the same terrain type → full reshuffle (not a swap) and re-validate. This is achievable for the 3-4-5-4-3 board's terrain counts (proof: the hex-adjacency graph is 3-colorable, e.g. by `(x-y) mod 3` on cube coordinates, and every required terrain-count group is well within the graph's independence number) but much rarer than tolerating one same-terrain neighbor - empirically ~2000 reshuffles on average via plain rejection sampling, up to ~13000 seen in testing, still well under 100ms since each attempt is O(19) work.
 - On (default): validation is skipped.
 
 ### 5. Ports — "6 border segments" model

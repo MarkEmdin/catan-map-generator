@@ -12,7 +12,7 @@ describe("assignNumbers", () => {
     for (let i = 0; i < RUNS; i++) {
       const placements = placeTerrain({
         desertInCenter: i % 2 === 0,
-        allowSameTerrainNeighbors: false,
+        allowSameTerrainNeighbors: true,
       });
       const hexes = assignNumbers(placements);
       const desertHexes = hexes.filter((h) => h.terrainType === "desert");
@@ -26,7 +26,7 @@ describe("assignNumbers", () => {
     for (let i = 0; i < RUNS; i++) {
       const placements = placeTerrain({
         desertInCenter: i % 2 === 0,
-        allowSameTerrainNeighbors: false,
+        allowSameTerrainNeighbors: true,
       });
       const hexes = assignNumbers(placements);
       const letters = hexes
@@ -41,7 +41,7 @@ describe("assignNumbers", () => {
     for (let i = 0; i < RUNS; i++) {
       const placements = placeTerrain({
         desertInCenter: i % 2 === 0,
-        allowSameTerrainNeighbors: false,
+        allowSameTerrainNeighbors: true,
       });
       const hexes = assignNumbers(placements);
       for (const hex of hexes) {
@@ -56,7 +56,7 @@ describe("assignNumbers", () => {
     for (let i = 0; i < RUNS; i++) {
       const placements = placeTerrain({
         desertInCenter: i % 2 === 0,
-        allowSameTerrainNeighbors: false,
+        allowSameTerrainNeighbors: true,
       });
       const hexes = assignNumbers(placements);
       const byKey = new Map(hexes.map((h) => [cubeKey(h.coordCube), h]));

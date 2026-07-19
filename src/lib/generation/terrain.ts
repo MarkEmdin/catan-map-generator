@@ -8,7 +8,11 @@ export interface TerrainPlacement {
 }
 
 const CENTER: CubeCoord = { x: 0, y: 0, z: 0 };
-const MAX_RESHUFFLE_ATTEMPTS = 500;
+// Requiring zero same-terrain neighbors (rather than tolerating one) is a
+// much rarer outcome of a full random reshuffle - empirically ~2000
+// attempts on average, up to ~13000 in testing - but each attempt is cheap
+// (O(19) work), so even the worst case stays well under 100ms.
+const MAX_RESHUFFLE_ATTEMPTS = 50000;
 
 function buildTerrainDeck(): string[] {
   const deck: string[] = [];
@@ -27,7 +31,7 @@ function hasSameTerrainViolation(placements: TerrainPlacement[]): boolean {
       const neighbor = byKey.get(cubeKey(n));
       return neighbor !== undefined && neighbor.terrainType === placement.terrainType;
     });
-    return sameTerrainNeighbors.length >= 2;
+    return sameTerrainNeighbors.length >= 1;
   });
 }
 

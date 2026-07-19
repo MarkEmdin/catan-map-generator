@@ -4,6 +4,10 @@ import { cubeKey, neighbors } from "./coords";
 import { TERRAIN_SET } from "../constants";
 
 const RUNS = 100;
+// Zero-tolerance reshuffling takes ~2000 attempts on average (vs a handful
+// for the other rules), so this run count is kept lower to keep the suite
+// fast while still giving reasonable confidence in the invariant.
+const STRICT_RUNS = 15;
 
 function countByTerrain(placements: TerrainPlacement[]) {
   const counts: Record<string, number> = {};
@@ -21,7 +25,7 @@ function countSameTerrainViolations(placements: TerrainPlacement[]) {
       const neighbor = byKey.get(cubeKey(n));
       return neighbor !== undefined && neighbor.terrainType === p.terrainType;
     });
-    if (sameTerrainNeighbors.length >= 2) violations++;
+    if (sameTerrainNeighbors.length >= 1) violations++;
   }
   return violations;
 }
@@ -53,7 +57,7 @@ describe("placeTerrain", () => {
   });
 
   it("never produces same-terrain adjacency violations when disallowed", () => {
-    for (let i = 0; i < RUNS; i++) {
+    for (let i = 0; i < STRICT_RUNS; i++) {
       const placements = placeTerrain({
         desertInCenter: i % 2 === 0,
         allowSameTerrainNeighbors: false,
