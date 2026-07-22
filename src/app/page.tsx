@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MapControls, GenerationOptions } from "@/components/MapControls";
-import { MapCanvas } from "@/components/MapCanvas";
+import { MapCanvas, MapSelection } from "@/components/MapCanvas";
+import { InfoSheet } from "@/components/InfoSheet";
 import { placeTerrain } from "@/lib/generation/terrain";
 import { assignNumbers } from "@/lib/generation/numbers";
 import { generatePorts } from "@/lib/generation/ports";
@@ -30,6 +31,7 @@ export default function Home() {
   const { t } = useTranslation();
   const [options, setOptions] = useState<GenerationOptions>(DEFAULT_OPTIONS);
   const [board, setBoard] = useState<Board | null>(null);
+  const [selection, setSelection] = useState<MapSelection | null>(null);
 
   // Generated only after mount so the server-prerendered HTML and the
   // client's first render match - a random board would otherwise differ
@@ -47,7 +49,10 @@ export default function Home() {
         onOptionsChange={setOptions}
         onGenerate={() => setBoard(generateBoard(options))}
       />
-      {board && <MapCanvas hexes={board.hexes} ports={board.ports} />}
+      {board && (
+        <MapCanvas hexes={board.hexes} ports={board.ports} onSelect={setSelection} />
+      )}
+      <InfoSheet selection={selection} onClose={() => setSelection(null)} />
     </div>
   );
 }

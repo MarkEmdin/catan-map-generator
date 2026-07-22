@@ -22,7 +22,8 @@
     "generate": "Generieren",
     "desertInCenter": "Wüste in der Mitte",
     "allowSameTerrainNeighbors": "Gleiches Gelände nebeneinander erlauben",
-    "language": "Sprache"
+    "language": "Sprache",
+    "close": "Schließen"
   },
   "nav": {
     "home": "Generator",

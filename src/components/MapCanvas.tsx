@@ -7,10 +7,15 @@ import { PortMarker } from "./PortMarker";
 const PORT_MARKER_RADIUS = 16;
 const PADDING = 24;
 
+export type MapSelection =
+  | { kind: "hex"; terrainType: string; numberToken: number | null }
+  | { kind: "port"; type: string };
+
 interface MapCanvasProps {
   hexes: HexTileData[];
   ports: PortSpec[];
   hexSize?: number;
+  onSelect?: (selection: MapSelection) => void;
 }
 
 export interface Bounds {
@@ -31,7 +36,7 @@ export function computeBounds(points: Point[]): Bounds {
   };
 }
 
-export function MapCanvas({ hexes, ports, hexSize = 50 }: MapCanvasProps) {
+export function MapCanvas({ hexes, ports, hexSize = 50, onSelect }: MapCanvasProps) {
   const hexPositions = hexes.map((hex) => ({
     hex,
     pixel: cubeToPixel(hex.coordCube, hexSize),
@@ -70,7 +75,18 @@ export function MapCanvas({ hexes, ports, hexSize = 50 }: MapCanvasProps) {
         fill="var(--sea-light)"
       />
       {hexPositions.map(({ hex, pixel }) => (
-        <g key={hex.id} transform={`translate(${pixel.x}, ${pixel.y})`}>
+        <g
+          key={hex.id}
+          transform={`translate(${pixel.x}, ${pixel.y})`}
+          onClick={() =>
+            onSelect?.({
+              kind: "hex",
+              terrainType: hex.terrainType,
+              numberToken: hex.numberToken,
+            })
+          }
+          style={{ cursor: onSelect ? "pointer" : undefined }}
+        >
           <HexTile
             id={hex.id}
             terrainType={hex.terrainType}
@@ -80,13 +96,13 @@ export function MapCanvas({ hexes, ports, hexSize = 50 }: MapCanvasProps) {
         </g>
       ))}
       {portPlacements.map((port, i) => (
-        <PortMarker
+        <g
           key={i}
-          type={port.type}
-          x={port.x}
-          y={port.y}
-          coastPoints={port.coastPoints}
-        />
+          onClick={() => onSelect?.({ kind: "port", type: port.type })}
+          style={{ cursor: onSelect ? "pointer" : undefined }}
+        >
+          <PortMarker type={port.type} x={port.x} y={port.y} coastPoints={port.coastPoints} />
+        </g>
       ))}
     </svg>
   );

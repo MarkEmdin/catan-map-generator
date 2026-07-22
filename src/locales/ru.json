@@ -22,7 +22,8 @@
     "generate": "Сгенерировать",
     "desertInCenter": "Пустыня в центре",
     "allowSameTerrainNeighbors": "Разрешить одинаковую местность рядом",
-    "language": "Язык"
+    "language": "Язык",
+    "close": "Закрыть"
   },
   "nav": {
     "home": "Генератор",

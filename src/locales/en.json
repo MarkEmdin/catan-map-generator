@@ -22,7 +22,8 @@
     "generate": "Generate",
     "desertInCenter": "Desert in the center",
     "allowSameTerrainNeighbors": "Allow same-terrain neighbors",
-    "language": "Language"
+    "language": "Language",
+    "close": "Close"
   },
   "nav": {
     "home": "Generator",
