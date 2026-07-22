@@ -31,18 +31,17 @@ The final result must visually resemble a real game board (hex textures, number 
   HexTile.tsx                       // a single hex (terrain + texture + number)
   NumberToken.tsx                     // number circle + roll probability
   PortMarker.tsx                       // port icon in the water + dashed lines to the coast
-  BorderSegment.tsx                      // one sea frame segment with its ports
-  I18nProvider.tsx                        // client-side react-i18next provider + localStorage sync
+  I18nProvider.tsx                       // client-side react-i18next provider + localStorage sync
 /src/lib/generation
   terrain.ts                        // terrain hex shuffle + adjacency validation
   numbers.ts                         // official alphabetical A-R algorithm
-  ports.ts                            // shuffle of the 6 border segments
+  ports.ts                            // static per-hex port list (fresh copies, nothing shuffled)
   portLayout.ts                        // pixel placement of port icons + coastal edges
   coords.ts                             // cube/axial → pixel, hex corners, neighbors
   shuffle.ts                              // shared Fisher-Yates shuffle
 /src/lib
-  constants.ts                          // TERRAIN_SET, LETTER_TO_NUMBER, SPIRAL_ORDER, BORDER_SEGMENTS_DEFAULT
-  types.ts                                // HexTile, BorderSegment, GenerationConfig
+  constants.ts                          // TERRAIN_SET, LETTER_TO_NUMBER, SPIRAL_ORDER, PORT_LAYOUT_DEFAULT
+  types.ts                                // HexTile, PortSpec, GenerationConfig
   i18n.ts                                  // react-i18next setup, resources loaded from /src/locales
 /src/locales
   ru.json
@@ -102,15 +101,17 @@ This guarantees that 6 and 8 never end up adjacent — by construction, not via 
 - Off: after placement — validate; if a hex has *any* neighbor of the same terrain type → full reshuffle (not a swap) and re-validate. This is achievable for the 3-4-5-4-3 board's terrain counts (proof: the hex-adjacency graph is 3-colorable, e.g. by `(x-y) mod 3` on cube coordinates, and every required terrain-count group is well within the graph's independence number) but much rarer than tolerating one same-terrain neighbor - empirically ~2000 reshuffles on average via plain rejection sampling, up to ~13000 seen in testing, still well under 100ms since each attempt is O(19) work.
 - On (default): validation is skipped.
 
-### 5. Ports — "6 border segments" model
+### 5. Ports — static per-hex placement
 
-Physically, ports are not placed fully at random: the sea frame is made of 6 border segments (frame pieces), each with ports fixed at specific positions relative to that segment.
+Ports are fully static, matching reference implementations (e.g. colonist.io): every port has a fixed outer-ring hex and connector geometry (`PORT_LAYOUT_DEFAULT`). Only terrain and number tokens are randomized — `generatePorts()` returns fresh copies of the same constant every time, nothing is shuffled. There is no "border segment" grouping; each port stands on its own.
 
 9 ports total: 4× generic (3:1) + 1× each resource (2:1).
 
-The only variable is the order of the 6 segments — shuffled (Fisher-Yates over 6 positions). The composition of each of the 6 segments (`fixedPorts`) is constant, set once based on the physical set (it differs between editions) — it never gets reshuffled independently.
+Geometrically, each port (`PortSpec`) has an `outerRingIndex` (which of the 12 outer-ring hexes it sits on) and a `leanTowardIndex`:
+- `null` → a **corner port**: both connector vertices belong only to that hex (its own single most-outward edge).
+- a neighboring hex's index → a **boundary port**: the edge is picked so one connector vertex is the one shared with that neighbor, the other is the host's own — see `leaningEdge()` in `src/lib/generation/portLayout.ts`. A host hex that's itself a true geometric corner of the board has an unambiguous own-direction edge that a small directional nudge can't override, so this is computed by directly locating the fully-shared edge with the neighbor and picking whichever adjacent edge only touches one of its vertices, not by nudging a direction vector.
 
-Geometrically, each side's port(s) all sit on that side's single designated hex (not spread across 2 hexes) — see `src/lib/generation/portLayout.ts`. That hex is never a neighbor of an adjacent side's hex, so two different sides' ports can never end up next to each other, regardless of shuffle order; a 2-port segment's own 2 ports sit on two adjacent edges of its one hex. An earlier version spread a side's ports across 2 different (and sometimes mutually adjacent) hexes, which let a neighboring side's port visually bleed into a 2-port side's territory — this design replaces it.
+With 9 ports on the 12-hex coast, some clustering is mathematically unavoidable (3 empty hexes split the ring into 3 arcs that must sum to 9, so some arc is >= 3); the current static arrangement hits the best possible spread — three evenly-spaced runs of exactly 3 — pinned down by a regression test in `ports.test.ts`. No divider lines are drawn in `MapCanvas` — with ports fully static there's no shuffled-order boundary left to mark.
 
 ### 6. Localization
 
@@ -135,13 +136,11 @@ interface HexTile {
   letter: string | null;
 }
 
-interface BorderSegment {
+interface PortSpec {
   id: number;
-  position: number;
-  fixedPorts: Array<{
-    type: string;
-    edgeOffsetInSegment: number;
-  }>;
+  type: string;
+  outerRingIndex: number;
+  leanTowardIndex: number | null;
 }
 ```
 
@@ -151,8 +150,7 @@ interface BorderSegment {
 2. If `desertInCenter` — fix the desert at the center.
 3. If `allowSameTerrainNeighbors === false` — validate and reshuffle/swap.
 4. Build the spiral, skip the desert, assign letters A-R and numbers.
-5. Shuffle the order of the 6 border segments.
-6. Assemble the final `HexTile[]` + `BorderSegment[]`, applying `language`.
+5. Assemble the final `HexTile[]` + `PortSpec[]`, applying `language`.
 
 ### 9. Known limitations
 

@@ -7,7 +7,7 @@ import { MapCanvas } from "@/components/MapCanvas";
 import { placeTerrain } from "@/lib/generation/terrain";
 import { assignNumbers } from "@/lib/generation/numbers";
 import { generatePorts } from "@/lib/generation/ports";
-import { HexTile, BorderSegment } from "@/lib/types";
+import { HexTile, PortSpec } from "@/lib/types";
 
 const DEFAULT_OPTIONS: GenerationOptions = {
   desertInCenter: false,
@@ -16,13 +16,13 @@ const DEFAULT_OPTIONS: GenerationOptions = {
 
 interface Board {
   hexes: HexTile[];
-  segments: BorderSegment[];
+  ports: PortSpec[];
 }
 
 function generateBoard(options: GenerationOptions): Board {
   return {
     hexes: assignNumbers(placeTerrain(options)),
-    segments: generatePorts(),
+    ports: generatePorts(),
   };
 }
 
@@ -47,7 +47,7 @@ export default function Home() {
         onOptionsChange={setOptions}
         onGenerate={() => setBoard(generateBoard(options))}
       />
-      {board && <MapCanvas hexes={board.hexes} segments={board.segments} />}
+      {board && <MapCanvas hexes={board.hexes} ports={board.ports} />}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import type { BorderSegment } from "./types";
+import type { PortSpec } from "./types";
 
 export const TERRAIN_SET = [
   { key: "hills", count: 3, resourceKey: "brick" },
@@ -62,50 +62,24 @@ export const SPIRAL_ORDER: Array<{ x: number; y: number; z: number }> = [
 ];
 
 // Confirmed against the physical set. 9 ports total: 4x generic (3:1) + 1
-// each resource (2:1), spread across the 6 frame segments. Only the segment
-// *order* is randomized at generation time; each segment's own port
-// composition is fixed.
+// each resource (2:1). Fully static - see src/lib/generation/portLayout.ts
+// for how outerRingIndex/leanTowardIndex become pixel positions.
 //
-// Segment 1: 3:1 + Wheat (2:1) · Segment 2: Ore (2:1) · Segment 3: 3:1 + Sheep (2:1)
-// Segment 4: 3:1 · Segment 5: 3:1 + Brick (2:1) · Segment 6: Wood (2:1)
-export const BORDER_SEGMENTS_DEFAULT: BorderSegment[] = [
-  {
-    id: 1,
-    position: 0,
-    fixedPorts: [
-      { type: "3:1", edgeOffsetInSegment: 0 },
-      { type: "wheat", edgeOffsetInSegment: 1 },
-    ],
-  },
-  {
-    id: 2,
-    position: 1,
-    fixedPorts: [{ type: "ore", edgeOffsetInSegment: 0 }],
-  },
-  {
-    id: 3,
-    position: 2,
-    fixedPorts: [
-      { type: "3:1", edgeOffsetInSegment: 0 },
-      { type: "sheep", edgeOffsetInSegment: 1 },
-    ],
-  },
-  {
-    id: 4,
-    position: 3,
-    fixedPorts: [{ type: "3:1", edgeOffsetInSegment: 0 }],
-  },
-  {
-    id: 5,
-    position: 4,
-    fixedPorts: [
-      { type: "3:1", edgeOffsetInSegment: 0 },
-      { type: "brick", edgeOffsetInSegment: 1 },
-    ],
-  },
-  {
-    id: 6,
-    position: 5,
-    fixedPorts: [{ type: "wood", edgeOffsetInSegment: 0 }],
-  },
+// Labeling the 12 outer-ring hexes A-L clockwise from the top (A = index 7,
+// then B=6, C=5, D=4, E=3, F=2, G=1, H=0, I=11, J=10, K=9, L=8 - SPIRAL_ORDER
+// index decreases going clockwise from A, wrapping after H=0 to I=11):
+//
+// ore: C + shared-with-B · 3:1: D (corner) · 3:1: E + shared-with-F
+// wheat: G + shared-with-F · brick: H (corner) · sheep: I + shared-with-J
+// wood: K + shared-with-J · 3:1: L (corner) · 3:1: A + shared-with-B
+export const PORT_LAYOUT_DEFAULT: PortSpec[] = [
+  { id: 1, type: "ore", outerRingIndex: 5, leanTowardIndex: 6 },
+  { id: 2, type: "3:1", outerRingIndex: 4, leanTowardIndex: null },
+  { id: 3, type: "3:1", outerRingIndex: 3, leanTowardIndex: 2 },
+  { id: 4, type: "wheat", outerRingIndex: 1, leanTowardIndex: 2 },
+  { id: 5, type: "brick", outerRingIndex: 0, leanTowardIndex: null },
+  { id: 6, type: "sheep", outerRingIndex: 11, leanTowardIndex: 10 },
+  { id: 7, type: "wood", outerRingIndex: 9, leanTowardIndex: 10 },
+  { id: 8, type: "3:1", outerRingIndex: 8, leanTowardIndex: null },
+  { id: 9, type: "3:1", outerRingIndex: 7, leanTowardIndex: 6 },
 ];

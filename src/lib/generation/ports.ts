@@ -1,14 +1,8 @@
-import { BORDER_SEGMENTS_DEFAULT } from "../constants";
-import { BorderSegment } from "../types";
-import { shuffle } from "./shuffle";
+import { PORT_LAYOUT_DEFAULT } from "../constants";
+import { PortSpec } from "../types";
 
-// Each side's ports all sit on that side's own single hex (see
-// portLayout.ts) which is never adjacent to a neighboring side's hex, so
-// unlike an earlier version of this function, no reshuffle-until-valid
-// step is needed here to keep segments' ports apart from each other.
-export function generatePorts(): BorderSegment[] {
-  return shuffle(BORDER_SEGMENTS_DEFAULT).map((segment, position) => ({
-    ...segment,
-    position,
-  }));
+// Ports are fully static: every port's hex and connector geometry is fixed
+// (see PORT_LAYOUT_DEFAULT). Only terrain and number tokens are randomized.
+export function generatePorts(): PortSpec[] {
+  return PORT_LAYOUT_DEFAULT.map((port) => ({ ...port }));
 }

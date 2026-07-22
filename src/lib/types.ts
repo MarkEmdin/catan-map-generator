@@ -12,11 +12,14 @@ export interface HexTile {
   letter: string | null;
 }
 
-export interface BorderSegment {
+export interface PortSpec {
   id: number;
-  position: number;
-  fixedPorts: Array<{
-    type: string;
-    edgeOffsetInSegment: number;
-  }>;
+  type: string;
+  // Index (0-11) into the 12 outer-ring hexes - the hex this port sits on.
+  outerRingIndex: number;
+  // Index (0-11) of the neighboring outer-ring hex this port's edge leans
+  // toward, so one of its 2 connector vertices is the one shared with that
+  // neighbor. null means a "corner" port: both connector vertices belong
+  // only to outerRingIndex's own hex (its single most outward edge).
+  leanTowardIndex: number | null;
 }

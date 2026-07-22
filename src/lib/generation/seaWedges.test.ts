@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { layoutSeaWedges } from "./portLayout";
-import { BORDER_SEGMENTS_DEFAULT } from "../constants";
 
 const HEX_SIZE = 50;
 
@@ -60,7 +59,7 @@ function isSimplePolygon(points: Pt[]): boolean {
 
 describe("layoutSeaWedges", () => {
   it("produces one 8-point wedge per segment (4 inner + 4 outer)", () => {
-    const wedges = layoutSeaWedges(BORDER_SEGMENTS_DEFAULT, HEX_SIZE);
+    const wedges = layoutSeaWedges(HEX_SIZE);
     expect(wedges).toHaveLength(6);
     for (const wedge of wedges) {
       expect(wedge.points).toHaveLength(8);
@@ -72,7 +71,7 @@ describe("layoutSeaWedges", () => {
   });
 
   it("tiles edge-to-edge: each wedge's last inner point matches the next wedge's first", () => {
-    const wedges = layoutSeaWedges(BORDER_SEGMENTS_DEFAULT, HEX_SIZE);
+    const wedges = layoutSeaWedges(HEX_SIZE);
     for (let s = 0; s < 6; s++) {
       const current = wedges[s].points;
       const next = wedges[(s + 1) % 6].points;
@@ -82,7 +81,7 @@ describe("layoutSeaWedges", () => {
   });
 
   it("is a simple (non-self-intersecting) polygon for every segment", () => {
-    const wedges = layoutSeaWedges(BORDER_SEGMENTS_DEFAULT, HEX_SIZE);
+    const wedges = layoutSeaWedges(HEX_SIZE);
     for (const wedge of wedges) {
       expect(isSimplePolygon(wedge.points)).toBe(true);
     }
@@ -93,7 +92,7 @@ describe("layoutSeaWedges", () => {
     // self-crossing-looking wedge even when technically non-self-intersecting.
     // Cross product sign (not raw atan2) avoids false positives at the
     // +/-180 degree wraparound.
-    const wedges = layoutSeaWedges(BORDER_SEGMENTS_DEFAULT, HEX_SIZE);
+    const wedges = layoutSeaWedges(HEX_SIZE);
     for (const wedge of wedges) {
       const inner = wedge.points.slice(0, 4);
       const turns = [];
@@ -114,7 +113,7 @@ describe("layoutSeaWedges", () => {
     // can't do that, since it doesn't change any point's angle at all -
     // verify that invariant directly rather than trusting the intent.
     const cross = (a: Pt, b: Pt) => a.x * b.y - a.y * b.x;
-    const wedges = layoutSeaWedges(BORDER_SEGMENTS_DEFAULT, HEX_SIZE);
+    const wedges = layoutSeaWedges(HEX_SIZE);
     for (const wedge of wedges) {
       const tipStart = wedge.points[0];
       const tipEnd = wedge.points[3];
@@ -126,7 +125,7 @@ describe("layoutSeaWedges", () => {
   });
 
   it("pushes the outer boundary strictly farther from center than the coastline", () => {
-    const wedges = layoutSeaWedges(BORDER_SEGMENTS_DEFAULT, HEX_SIZE);
+    const wedges = layoutSeaWedges(HEX_SIZE);
     for (const wedge of wedges) {
       const inner = wedge.points.slice(0, 4);
       const outer = wedge.points.slice(4).reverse();
