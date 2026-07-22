@@ -1,11 +1,28 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { I18nProvider } from "@/components/I18nProvider";
 import { Header } from "@/components/Header";
 import "./globals.css";
 
+const TITLE = "Catan Map Generator";
+const DESCRIPTION = "Generate a Catan board map for physical assembly";
+
 export const metadata: Metadata = {
-  title: "Catan Map Generator",
-  description: "Generate a Catan board map for physical assembly",
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#2c6e8e",
 };
 
 export default function RootLayout({
